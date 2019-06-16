@@ -160,10 +160,7 @@ export default {
         jurusan: '',
         alamat: ''
       },
-      siswa: [
-        {id: uid(), nama: 'Fulan Dulan', nis: 123456, email: 'fulan.dulan@gmail.com', jurusan: 'RPL', alamat: 'jl. disini dulu aja'},
-        {id: uid(), nama: 'Fulan Dulan 2', nis: 123456, email: 'fulan.dulan@gmail.com', jurusan: 'RPL', alamat: 'jl. disini dulu aja'},
-      ]
+      siswa: []
     }
   },
   methods: {
@@ -182,10 +179,12 @@ export default {
       emailSelector.validate()
       jurusanSelector.validate()
       alamatSelector.validate()
-      
-      this.showDialog = false
-      this.addSiswa()
-      this.clearForm()
+
+      if (namaSelector.hasError || nisSelector.hasError || emailSelector.hasError || jurusanSelector.hasError || alamatSelector.hasError) console.log("Gagal simpan data siswa")
+      else {
+        this.addSiswa()
+        this.clearForm()
+      }
     },
     clearForm() {
       this.form.nama = ''
@@ -193,15 +192,39 @@ export default {
       this.form.email = ''
       this.form.jurusan = ''
       this.form.alamat = ''
+      this.showDialog = false
     },
-    addSiswa() {
+    async addSiswa() {
+      this.$q.loadingBar.start()
+      let id = uid()
+
+      try {
+        const doc = await this.$firebase.firestore().collection('siswa').doc(id).set({
+          nama: this.form.nama,
+          nis: this.form.nis,
+          email: this.form.email,
+          jurusan: this.form.jurusan,
+          alamat: this.form.alamat,
+          dibuat: Date.now()
+        })
+
+        this.$q.notify({
+          message: 'Data siswa berhasil disimpan',
+          position: 'top',
+          icon: 'eva-checkmark-circle-2-outline',
+          color: 'positive'
+        })
+
+        this.$q.loadingBar.stop()
+
+      } catch (err) {
+        console.log(err.message)
+        this.$q.loadingBar.stop()
+      }
+
       this.siswa.push({
         id: uid(),
-        nama: this.form.nama,
-        nis: this.form.nis,
-        email: this.form.email,
-        jurusan: this.form.jurusan,
-        alamat: this.form.alamat
+        
       })
     }
   }
