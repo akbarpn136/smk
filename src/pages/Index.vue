@@ -216,16 +216,10 @@ export default {
         })
 
         this.$q.loadingBar.stop()
-
       } catch (err) {
         console.log(err.message)
         this.$q.loadingBar.stop()
       }
-
-      this.siswa.push({
-        id: uid(),
-        
-      })
     }
   }
 }
