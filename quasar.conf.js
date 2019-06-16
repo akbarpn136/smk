@@ -56,7 +56,14 @@ module.exports = function (ctx) {
       plugins: [
         'Notify',
         'LoadingBar'
-      ]
+      ],
+
+      // Quasar configs
+      config: {
+        loadingBar: {
+          skipHijack: true
+        }
+      }
 
       // iconSet: 'ionicons-v4'
       // lang: 'de' // Quasar language
