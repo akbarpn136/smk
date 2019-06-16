@@ -7,7 +7,7 @@
           flat
           round
           dense
-          @click="showDialog = !showDialog"
+          @click="showForm()"
           icon="eva-plus-circle-outline"
         />
       </q-item-label>
@@ -15,31 +15,31 @@
       <q-item v-for="sis in siswa" :key="sis.id">
         <q-item-section>
           <q-item-label>
-            {{sis.nama}}
+            {{sis.data.nama}}
           </q-item-label>
         </q-item-section>
 
         <q-item-section>
           <q-item-label>
-            {{sis.nis}}
+            {{sis.data.nis}}
           </q-item-label>
         </q-item-section>
 
         <q-item-section>
           <q-item-label>
-            {{sis.email}}
+            {{sis.data.email}}
           </q-item-label>
         </q-item-section>
 
         <q-item-section>
           <q-item-label>
-            {{sis.jurusan}}
+            {{sis.data.jurusan}}
           </q-item-label>
         </q-item-section>
 
         <q-item-section>
           <q-item-label>
-            {{sis.alamat}}
+            {{sis.data.alamat}}
           </q-item-label>
         </q-item-section>
 
@@ -48,7 +48,8 @@
             dense
             round
             flat
-            icon="eva-edit-outline"
+            icon="eva-edit-outline" 
+            @click="showForm(sis.id)"
           />
         </q-item-section>
       </q-item>
@@ -160,12 +161,24 @@ export default {
         jurusan: '',
         alamat: ''
       },
-      siswa: []
+      siswa: [],
+      gid: null
     }
+  },
+  created() {
+    this.fetchSiswa()
   },
   methods: {
     validateEmail(value) {
       return isEmail(value)
+    },
+    showForm(id='') {
+      this.showDialog = true
+
+      if (id != '') {
+        this.fetchSiswaById(id)
+        this.gid = id
+      } else this.gid = ''
     },
     simpan() {
       const namaSelector = this.$refs.nama
@@ -182,7 +195,7 @@ export default {
 
       if (namaSelector.hasError || nisSelector.hasError || emailSelector.hasError || jurusanSelector.hasError || alamatSelector.hasError) console.log("Gagal simpan data siswa")
       else {
-        this.addSiswa()
+        this.addSiswa(this.gid)
         this.clearForm()
       }
     },
@@ -194,9 +207,9 @@ export default {
       this.form.alamat = ''
       this.showDialog = false
     },
-    async addSiswa() {
+    async addSiswa(id) {
       this.$q.loadingBar.start()
-      let id = uid()
+      if (id == '') id = uid()
 
       try {
         const doc = await this.$firebase.firestore().collection('siswa').doc(id).set({
@@ -219,6 +232,36 @@ export default {
       } catch (err) {
         console.log(err.message)
         this.$q.loadingBar.stop()
+      }
+    },
+    async fetchSiswa() {
+      this.$q.loadingBar.start()
+
+      try {
+        await this.$firebase.firestore().collection('siswa').orderBy('dibuat', 'desc').onSnapshot(ref => {
+          this.siswa = []
+          ref.forEach(doc => {
+            this.siswa.push({id: doc.id, data: doc.data()})
+          })
+        })
+        this.$q.loadingBar.stop()
+      } catch (err) {
+        console.log(err.message)
+        this.$q.loadingBar.stop()
+      }
+    },
+    async fetchSiswaById(id) {
+      try {
+        const doc = await this.$firebase.firestore().collection('siswa').doc(id).get()
+        const siswa = doc.data()
+
+        this.form.nama = siswa.nama
+        this.form.nis = siswa.nis
+        this.form.email = siswa.email
+        this.form.jurusan = siswa.jurusan
+        this.form.alamat = siswa.alamat
+      } catch (err) {
+        console.log(err.message)
       }
     }
   }
