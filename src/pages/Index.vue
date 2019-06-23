@@ -48,6 +48,13 @@
             dense
             round
             flat
+            icon="eva-trash-2-outline" 
+            @click="showConfirmDelete(sis.id)"
+          />
+          <q-btn 
+            dense
+            round
+            flat
             icon="eva-edit-outline" 
             @click="showForm(sis.id)"
           />
@@ -139,6 +146,19 @@
         </q-card-section>
       </q-card>
     </q-dialog>
+
+    <q-dialog v-model="confirmDelete" persistent>
+      <q-card>
+        <q-card-section>
+          <span class="q-ml-sm">Data akan dihapus, yakin?</span>
+        </q-card-section>
+
+        <q-card-actions align="center">
+          <q-btn flat label="BATAL" color="grey" @click="confirmDelete = !confirmDelete" />
+          <q-btn flat label="Ya, Hapus" color="negative" @click="deleteSiswa" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -154,6 +174,7 @@ export default {
   data() {
     return {
       showDialog: false,
+      confirmDelete: false,
       form: {
         nama: '',
         nis: '',
@@ -179,6 +200,10 @@ export default {
         this.fetchSiswaById(id)
         this.gid = id
       } else this.gid = ''
+    },
+    showConfirmDelete(id) {
+      this.confirmDelete = true
+      this.gid = id
     },
     simpan() {
       const namaSelector = this.$refs.nama
@@ -262,6 +287,14 @@ export default {
         this.form.alamat = siswa.alamat
       } catch (err) {
         console.log(err.message)
+      }
+    },
+    async deleteSiswa() {
+      try {
+        this.confirmDelete = false
+        await this.$firebase.firestore().collection('siswa').doc(this.gid).delete()
+      } catch (error) {
+        console.log(error.message)
       }
     }
   }
