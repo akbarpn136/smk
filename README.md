@@ -20,5 +20,7 @@ Untuk memulai pengembangan aplikasi berbasis web, ada beberapa hal yang harus di
 
 Untuk memulai pengembangan aplikasi berbasis android, ada beberapa hal yang harus dikerjakan diantaranya:
 
-1. Melakukan instalasi cordova secara global dengan perintah `sudo npm install -g cordova` seperti yang dijelaskan di dokumentasi [INI](https://quasar.dev/quasar-cli/developing-mobile-apps/preparation).
-2. 
+1. Melakukan instalasi cordova secara global dengan perintah di linux/unix `sudo npm install -g cordova` seperti yang dijelaskan di dokumentasi [INI](https://quasar.dev/quasar-cli/developing-mobile-apps/preparation).
+2. Setelah itu, lakukan perintah `quasar build -m cordova -T android` di dalam direktori aplikasi siswa SMK (ada *package.json*). Apabila terjadi *ERROR*, abaikan dulu saja.
+3. Buka *Android Studio* dan buka *Exisiting Android Project* di direktori `src-cordova/platforms/android`.
+4. Ikuti instruksi yang diberikan didalam video diatas.
