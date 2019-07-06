@@ -1,6 +1,6 @@
 # Repositori Pengembangan Aplikasi Siswa SMK dengan Quasar Framework
 
-![aplikasi siswa SMK](/home/justsimple/developments/quasar/smk/screenshot.png)
+![aplikasi siswa SMK](./screenshot.png)
 
 Quasar framework menggunakan teknologi yang diberikan oleh VueJS dan multi platform meliputi Web (SPA, PWA, SSR), Mobile (Android, iOS) dan desktop (Electron).
 
