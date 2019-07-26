@@ -48,7 +48,8 @@ module.exports = function (ctx) {
         'QTooltip',
         'QInput',
         'QUploader',
-        'QAvatar'
+        'QAvatar',
+        'QBadge'
       ],
 
       directives: [
