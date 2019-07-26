@@ -10,9 +10,10 @@
           flat
           dense
           round
-          @click="$router.push('/tentang')"
+          @click="goToTentang()"
           aria-label="Tentang">
           <q-icon name="eva-question-mark-circle-outline" />
+          <q-badge floating color="grey-9">{{kunjungan}}</q-badge>
         </q-btn>
 
         <q-btn
@@ -128,6 +129,15 @@ export default {
         console.log(err.message)
         this.user.hasAvatar = false
       }
+    },
+    goToTentang() {
+      if(this.$route.path != '/tentang') this.$store.commit('counter/counterMutation')
+      this.$router.push('/tentang')
+    }
+  },
+  computed: {
+    kunjungan: function() {
+      return this.$store.getters['counter/counterGetter']
     }
   }
 }
