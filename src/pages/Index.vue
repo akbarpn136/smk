@@ -2,7 +2,7 @@
   <q-page padding>
     <q-list bordered separator class="rounded-borders">
       <q-item-label header>
-        Daftar Siswa
+        Daftar Barang
         <q-btn 
           flat
           round
@@ -12,34 +12,28 @@
         />
       </q-item-label>
 
-      <q-item v-for="sis in siswa" :key="sis.id">
+      <q-item v-for="brg in barang" :key="brg.id">
         <q-item-section>
           <q-item-label>
-            {{sis.data.nama}}
+            {{brg.data.nama}}
           </q-item-label>
         </q-item-section>
 
         <q-item-section>
           <q-item-label>
-            {{sis.data.nis}}
+            {{brg.data.nomor}}
           </q-item-label>
         </q-item-section>
 
         <q-item-section>
           <q-item-label>
-            {{sis.data.email}}
+            {{brg.data.kategori}}
           </q-item-label>
         </q-item-section>
 
         <q-item-section>
           <q-item-label>
-            {{sis.data.jurusan}}
-          </q-item-label>
-        </q-item-section>
-
-        <q-item-section>
-          <q-item-label>
-            {{sis.data.alamat}}
+            {{brg.data.pemilik}}
           </q-item-label>
         </q-item-section>
 
@@ -49,14 +43,14 @@
             round
             flat
             icon="eva-trash-2-outline" 
-            @click="showConfirmDelete(sis.id)"
+            @click="showConfirmDelete(brg.id)"
           />
           <q-btn 
             dense
             round
             flat
             icon="eva-edit-outline" 
-            @click="showForm(sis.id)"
+            @click="showForm(brg.id)"
           />
         </q-item-section>
       </q-item>
@@ -66,7 +60,7 @@
       <q-card style="width: 350px">
         <q-bar>
           <q-icon name="eva-save" />
-          <div>Kelola Data Siswa</div>
+          <div>Olah Data Barang</div>
 
           <q-space />
 
@@ -85,54 +79,38 @@
             ref="nama"
             v-model="form.nama"
             label="Nama"
-            placeholder="Nama lengkap siswa"
+            placeholder="Nama lengkap barang"
             hint=""
             :rules="[val => !!val || 'Nama diperlukan']" />
         </q-card-section>
 
         <q-card-section>
           <q-input outlined
-            ref="nis"
-            v-model="form.nis"
-            label="NIS"
-            type="number"
-            placeholder="Nomor induk siswa"
+            ref="nomor"
+            v-model="form.nomor"
+            label="Nomor seri"
+            placeholder="Nomor Seri Barang"
             hint=""
-            :rules="[val => !!val || 'NIS diperlukan']" />
+            :rules="[val => !!val || 'Nomor diperlukan']" />
         </q-card-section>
 
         <q-card-section>
           <q-input outlined
-            ref="email"
-            v-model="form.email"
-            label="Email"
-            type="email"
-            placeholder="Email siswa"
+            ref="kategori"
+            v-model="form.kategori"
+            label="Kategori"
+            placeholder="Kategori barang"
             hint=""
-            :rules="[
-              val => !!val || 'Email diperlukan',
-              val => this.validateEmail(val) || 'Format email keliru'
-            ]" />
+            :rules="[val => !!val || 'Kategori diperlukan']" />
         </q-card-section>
 
         <q-card-section>
           <q-input outlined
-            ref="jurusan"
-            v-model="form.jurusan"
-            label="Jurusan"
-            placeholder="Jurusan siswa"
-            hint=""
-            :rules="[val => !!val || 'Jurusan diperlukan']" />
-        </q-card-section>
-
-        <q-card-section>
-          <q-input outlined
-            ref="alamat"
-            v-model="form.alamat"
-            label="Alamat"
-            placeholder="Alamat siswa"
-            hint=""
-            :rules="[val => !!val || 'Alamat diperlukan']" />
+            ref="lokasi"
+            v-model="form.lokasi"
+            label="Lokasi"
+            placeholder="Lokasi barang"
+            hint="" />
         </q-card-section>
 
         <q-card-section>
@@ -155,7 +133,7 @@
 
         <q-card-actions align="center">
           <q-btn flat label="BATAL" color="grey" @click="confirmDelete = !confirmDelete" />
-          <q-btn flat label="Ya, Hapus" color="negative" @click="deleteSiswa" />
+          <q-btn flat label="Ya, Hapus" color="negative" @click="deleteBarang" />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -177,27 +155,36 @@ export default {
       confirmDelete: false,
       form: {
         nama: '',
-        nis: '',
-        email: '',
-        jurusan: '',
-        alamat: ''
+        nomor: '',
+        kategori: '',
+        lokasi: ''
       },
-      siswa: [],
-      gid: null
+      barang: [],
+      gid: null,
+      user: ''
     }
   },
   created() {
-    this.fetchSiswa()
+    this.getUser()
+    this.fetchBarang()
   },
   methods: {
-    validateEmail(value) {
-      return isEmail(value)
+    getUser() {
+      this.$firebase.auth().onAuthStateChanged(user => {
+        if (user) {
+          const email = user.email
+
+          this.user = email.substring(0, email.lastIndexOf("@"))
+        } else {
+          console.log('Already logged out.')
+        }
+      })
     },
     showForm(id='') {
       this.showDialog = true
 
       if (id != '') {
-        this.fetchSiswaById(id)
+        this.fetchBarangById(id)
         this.gid = id
       } else this.gid = ''
     },
@@ -207,47 +194,40 @@ export default {
     },
     simpan() {
       const namaSelector = this.$refs.nama
-      const nisSelector = this.$refs.nis
-      const emailSelector = this.$refs.email
-      const jurusanSelector = this.$refs.jurusan
-      const alamatSelector = this.$refs.alamat
+      const nomorSelector = this.$refs.nomor
+      const kategoriSelector = this.$refs.kategori
 
       namaSelector.validate()
-      nisSelector.validate()
-      emailSelector.validate()
-      jurusanSelector.validate()
-      alamatSelector.validate()
+      nomorSelector.validate()
+      kategoriSelector.validate()
 
-      if (namaSelector.hasError || nisSelector.hasError || emailSelector.hasError || jurusanSelector.hasError || alamatSelector.hasError) console.log("Gagal simpan data siswa")
+      if (namaSelector.hasError || nomorSelector.hasError || kategoriSelector.hasError) console.log("Gagal simpan data barang")
       else {
-        this.addSiswa(this.gid)
+        this.addBarang(this.gid)
         this.clearForm()
       }
     },
     clearForm() {
       this.form.nama = ''
-      this.form.nis = ''
-      this.form.email = ''
-      this.form.jurusan = ''
-      this.form.alamat = ''
+      this.form.nomor = ''
+      this.form.kategori = ''
       this.showDialog = false
     },
-    async addSiswa(id) {
+    async addBarang(id) {
       this.$q.loadingBar.start()
       if (id == '') id = uid()
 
       try {
-        const doc = await this.$firebase.firestore().collection('siswa').doc(id).set({
+        const doc = await this.$firebase.firestore().collection('barang').doc(id).set({
           nama: this.form.nama,
-          nis: this.form.nis,
-          email: this.form.email,
-          jurusan: this.form.jurusan,
-          alamat: this.form.alamat,
+          nomor: this.form.nomor,
+          kategori: this.form.kategori,
+          pemilik: this.user,
           dibuat: Date.now()
         })
 
         this.$q.notify({
-          message: 'Data siswa berhasil disimpan',
+          message: 'Data barang berhasil disimpan',
           position: 'top',
           icon: 'eva-checkmark-circle-2-outline',
           color: 'positive'
@@ -259,14 +239,14 @@ export default {
         this.$q.loadingBar.stop()
       }
     },
-    async fetchSiswa() {
+    async fetchBarang() {
       this.$q.loadingBar.start()
 
       try {
-        await this.$firebase.firestore().collection('siswa').orderBy('dibuat', 'desc').onSnapshot(ref => {
-          this.siswa = []
+        await this.$firebase.firestore().collection('barang').orderBy('dibuat', 'desc').onSnapshot(ref => {
+          this.barang = []
           ref.forEach(doc => {
-            this.siswa.push({id: doc.id, data: doc.data()})
+            this.barang.push({id: doc.id, data: doc.data()})
           })
         })
         this.$q.loadingBar.stop()
@@ -275,24 +255,22 @@ export default {
         this.$q.loadingBar.stop()
       }
     },
-    async fetchSiswaById(id) {
+    async fetchBarangById(id) {
       try {
-        const doc = await this.$firebase.firestore().collection('siswa').doc(id).get()
-        const siswa = doc.data()
+        const doc = await this.$firebase.firestore().collection('barang').doc(id).get()
+        const barang = doc.data()
 
-        this.form.nama = siswa.nama
-        this.form.nis = siswa.nis
-        this.form.email = siswa.email
-        this.form.jurusan = siswa.jurusan
-        this.form.alamat = siswa.alamat
+        this.form.nama = barang.nama
+        this.form.nomor = barang.nomor
+        this.form.kategori = barang.kategori
       } catch (err) {
         console.log(err.message)
       }
     },
-    async deleteSiswa() {
+    async deleteBarang() {
       try {
         this.confirmDelete = false
-        await this.$firebase.firestore().collection('siswa').doc(this.gid).delete()
+        await this.$firebase.firestore().collection('barang').doc(this.gid).delete()
       } catch (error) {
         console.log(error.message)
       }
