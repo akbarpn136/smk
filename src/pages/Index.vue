@@ -33,6 +33,12 @@
 
         <q-item-section>
           <q-item-label>
+            {{brg.data.lokasi}}
+          </q-item-label>
+        </q-item-section>
+
+        <q-item-section>
+          <q-item-label>
             {{brg.data.pemilik}}
           </q-item-label>
         </q-item-section>
@@ -105,12 +111,10 @@
         </q-card-section>
 
         <q-card-section>
-          <q-input outlined
-            ref="lokasi"
-            v-model="form.lokasi"
-            label="Lokasi"
-            placeholder="Lokasi barang"
-            hint="" />
+          <q-select outlined 
+            v-model="form.lokasi" 
+            :options="['LSWT', 'Hemi Anechoic', 'VIENTA']" 
+            label="Lokasi" />
         </q-card-section>
 
         <q-card-section>
@@ -223,6 +227,7 @@ export default {
           nomor: this.form.nomor,
           kategori: this.form.kategori,
           pemilik: this.user,
+          lokasi: this.form.lokasi,
           dibuat: Date.now()
         })
 
@@ -263,6 +268,7 @@ export default {
         this.form.nama = barang.nama
         this.form.nomor = barang.nomor
         this.form.kategori = barang.kategori
+        this.form.lokasi = barang.lokasi
       } catch (err) {
         console.log(err.message)
       }
