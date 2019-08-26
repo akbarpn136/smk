@@ -50,11 +50,13 @@ module.exports = function (ctx) {
         'QUploader',
         'QAvatar',
         'QBadge',
-        'QSelect'
+        'QSelect',
+        'QBtnDropdown'
       ],
 
       directives: [
-        'Ripple'
+        'Ripple',
+        'ClosePopup'
       ],
 
       // Quasar plugins
