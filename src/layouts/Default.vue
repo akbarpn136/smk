@@ -3,7 +3,7 @@
     <q-header elevated class="bg-gradient-primary">
       <q-toolbar>
         <q-toolbar-title>
-          Aplikasi Siswa SMK
+          Olah Aset Lab. BBTA3
         </q-toolbar-title>
 
         <q-btn
@@ -98,7 +98,7 @@ export default {
       }
     },
     async factoryFn(file) {
-      const pictRef = this.storageRef.child(`smk/${this.user.id}`)
+      const pictRef = this.storageRef.child(`pegawai/${this.user.id}`)
       const pict = file[0]
 
       try {
@@ -122,7 +122,7 @@ export default {
     },
     async getAvatar() {
       try {
-        this.user.urlAvatar = await this.storageRef.child(`smk/${this.user.id}`).getDownloadURL()
+        this.user.urlAvatar = await this.storageRef.child(`pegawai/${this.user.id}`).getDownloadURL()
 
         if (this.user.urlAvatar) this.user.hasAvatar = true
       } catch (err) {
