@@ -1,8 +1,8 @@
 {
-  "name": "smk",
+  "name": "olahaset",
   "version": "0.0.1",
-  "description": "aplikasi siswa smk dengan quasar framework",
-  "productName": "Aplikasi Siswa SMK",
+  "description": "aplikasi olah aset lab. BBTA3 BPPT dengan quasar framework",
+  "productName": "Aplikasi Olah Aset",
   "cordovaId": "org.cordova.quasar.app",
   "author": "akbarpn136",
   "private": true,
