@@ -1,4 +1,4 @@
-# Repositori Pengembangan Aplikasi Siswa SMK dengan Quasar Framework
+# Repositori Pengembangan Aplikasi Olah Aset dengan Quasar Framework
 
 ![aplikasi siswa SMK](./screenshot.png)
 
