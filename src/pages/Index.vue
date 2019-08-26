@@ -10,9 +10,31 @@
           @click="showForm()"
           icon="eva-plus-circle-outline"
         />
+
+        <q-btn-dropdown outline color="grey" label="Lokasi" class="q-ml-sm">
+          <q-list>
+            <q-item 
+              clickable 
+              v-close-popup 
+              @click="onItemClick(lok)" 
+              v-for="lok in daftarLokasi" 
+              :key="lok">
+              <q-item-section>
+                <q-item-label>{{lok}}</q-item-label>
+              </q-item-section>
+            </q-item>
+          </q-list>
+        </q-btn-dropdown>
       </q-item-label>
 
       <q-item v-for="brg in barang" :key="brg.id">
+        <q-item-section avatar middle>
+          <q-avatar rounded>
+            <img :src="brg.data.foto" v-if="brg.data.foto">
+            <img src="http://via.placeholder.com/640x360" v-else>
+          </q-avatar>
+        </q-item-section>
+
         <q-item-section>
           <q-item-label>
             {{brg.data.nama}}
@@ -112,9 +134,20 @@
 
         <q-card-section>
           <q-select outlined 
+            ref="lokasi"
             v-model="form.lokasi" 
-            :options="['LSWT', 'Hemi Anechoic', 'VIENTA']" 
-            label="Lokasi" />
+            :options="daftarLokasi" 
+            label="Lokasi"
+            :rules="[val => !!val || 'Lokasi diperlukan']" />
+        </q-card-section>
+
+        <q-card-section>
+          <q-input outlined
+            ref="foto"
+            v-model="form.foto"
+            label="Foto URL"
+            placeholder="Foto URL barang"
+            hint="" />
         </q-card-section>
 
         <q-card-section>
@@ -157,11 +190,13 @@ export default {
     return {
       showDialog: false,
       confirmDelete: false,
+      daftarLokasi: ['', 'LSWT', 'Hemi Anechoic', 'VIENTA'],
       form: {
         nama: '',
         nomor: '',
         kategori: '',
-        lokasi: ''
+        lokasi: '',
+        foto: ''
       },
       barang: [],
       gid: null,
@@ -200,12 +235,17 @@ export default {
       const namaSelector = this.$refs.nama
       const nomorSelector = this.$refs.nomor
       const kategoriSelector = this.$refs.kategori
+      const lokasiSelector = this.$refs.lokasi
 
       namaSelector.validate()
       nomorSelector.validate()
       kategoriSelector.validate()
+      lokasiSelector.validate()
 
-      if (namaSelector.hasError || nomorSelector.hasError || kategoriSelector.hasError) console.log("Gagal simpan data barang")
+      if (namaSelector.hasError || 
+        nomorSelector.hasError || 
+        kategoriSelector.hasError || 
+        lokasiSelector.hasError) console.log("Gagal simpan data barang")
       else {
         this.addBarang(this.gid)
         this.clearForm()
@@ -228,6 +268,7 @@ export default {
           kategori: this.form.kategori,
           pemilik: this.user,
           lokasi: this.form.lokasi,
+          foto: this.form.foto,
           dibuat: Date.now()
         })
 
@@ -244,11 +285,15 @@ export default {
         this.$q.loadingBar.stop()
       }
     },
-    async fetchBarang() {
+    async fetchBarang(lokasi='') {
       this.$q.loadingBar.start()
+      const barangRef = this.$firebase.firestore().collection('barang').orderBy('dibuat', 'desc')
+      let kondisi = lokasi != '' ? 
+        barangRef.where("lokasi", "==", lokasi) :
+        barangRef
 
       try {
-        await this.$firebase.firestore().collection('barang').orderBy('dibuat', 'desc').onSnapshot(ref => {
+        await kondisi.onSnapshot(ref => {
           this.barang = []
           ref.forEach(doc => {
             this.barang.push({id: doc.id, data: doc.data()})
@@ -269,6 +314,7 @@ export default {
         this.form.nomor = barang.nomor
         this.form.kategori = barang.kategori
         this.form.lokasi = barang.lokasi
+        this.form.foto = barang.foto
       } catch (err) {
         console.log(err.message)
       }
@@ -280,6 +326,9 @@ export default {
       } catch (error) {
         console.log(error.message)
       }
+    },
+    onItemClick(value) {
+      this.fetchBarang(value)
     }
   }
 }
