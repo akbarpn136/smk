@@ -3,7 +3,7 @@
     <q-header elevated class="bg-gradient-primary">
       <q-toolbar>
         <q-toolbar-title>
-          Olah Aset Lab. BBTA3
+          Sistem Manajemen Aset Laboratorium BBTA3
         </q-toolbar-title>
 
         <q-btn
@@ -40,6 +40,8 @@
       </q-toolbar>
     </q-header>
 
+    
+
     <q-dialog v-model="showDialogPict" persistent>
       <q-card>
         <q-bar>
@@ -62,6 +64,9 @@
     <q-page-container>
       <router-view />
     </q-page-container>
+
+    
+
   </q-layout>
 </template>
 
@@ -72,6 +77,7 @@ export default {
     return {
       storageRef: null,
       showDialogPict: false,
+      search: '',
       user: {
         id: '',
         hasAvatar: false,
