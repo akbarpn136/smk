@@ -51,7 +51,13 @@ module.exports = function (ctx) {
         'QAvatar',
         'QBadge',
         'QSelect',
-        'QBtnDropdown'
+        'QBtnDropdown',
+        'QDate'
+        //'QTable',
+        //'QTh',
+        //'QTr',
+        //'QTd',
+        //'QSearch'
       ],
 
       directives: [
