@@ -3,11 +3,11 @@
     <q-card>
       <q-bar>
         <q-icon name="eva-bulb" />
-        <div>Tentang Aplikasi Olah Aset</div>
+        <div>Tentang SIMAL BBTA3</div>
       </q-bar>
 
       <q-card-section>
-        Aplikasi Olah Aset Laboratorium BBTA3 BPPT ini dikembangkan menggunakan <i>Quasar Framework</i> dengan lisensi <b>Open Source</b>.
+        Sistem Manajemen Aset Laboratorium BBTA3 BPPT ini dikembangkan menggunakan <i>Quasar Framework</i> dengan lisensi <b>Open Source</b>.
         Dibuat dengan sepenuh <q-icon name="eva-heart" color="red" /> oleh coder.
       </q-card-section>
 
