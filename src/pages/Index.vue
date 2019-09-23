@@ -38,9 +38,11 @@
                 />
             </q-list>
         </q-item-label>
+        
 
         <q-input
             v-model="cari"
+            class
             filled
             placeholder="Search"
             @keyup.enter="onSearchClick(cari)"
@@ -61,9 +63,12 @@
 
       <q-item v-for="brg in barang" :key="brg.id">
         <q-item-section avatar middle>
-          <q-avatar size="190px" >
+          <q-avatar size="190px" 
+            @click="showGmbr(brg.id)"
+          >
             <img :src="brg.data.foto" v-if="brg.data.foto">
             <img src="http://aerobox.bbta3.bppt.go.id/index.php/s/xa2k8Iink4LwxuH/download" v-else>
+
           </q-avatar>
         </q-item-section>
 
@@ -315,7 +320,7 @@
             hint="" />
         </q-card-section>
 
-          <q-card-section>
+        <q-card-section>
           <q-input outlined
             ref="log"
             v-model="form.log"
@@ -342,6 +347,32 @@
             size="lg"
             @click="simpan" />
         </q-card-section>
+      </q-card>
+    </q-dialog>
+
+    <q-dialog v-model="showImage" persistent>
+      <q-card>
+        <q-bar>
+          <q-icon name="eva-save" />
+          <div>Foto Barang</div>
+
+          <q-space />
+
+          <q-btn 
+            dense
+            flat
+            icon="eva-close-outline"
+            @click="showImage = !showImage">
+
+            <q-tooltip>Tutup</q-tooltip>
+          </q-btn>
+        </q-bar>
+
+        <img :src="selectedImage.foto" v-if="selectedImage.foto">
+        <img src="http://aerobox.bbta3.bppt.go.id/index.php/s/xa2k8Iink4LwxuH/download" v-else>
+
+      
+
       </q-card>
     </q-dialog>
 
@@ -372,8 +403,10 @@ export default {
   name: 'PageIndex',
   data() {
     return {
+      selectedImage:'',
       cari: '',
       showDialog: false,
+      showImage: false,
       confirmDelete: false,
       daftarKategori: ['', 'Alat Ukur', 'Sensor', 'Technical Document', 'Fasilitas Uji','Tools', 'Lain-lain'],
       daftarLokasi: ['', 'VIENTA', 'LSWT', 'Hemi Anechoic','LIWET','ILST'],
@@ -405,6 +438,7 @@ export default {
     this.fetchBarang()
     this.fetchLayanan()
     this.fetchNama()
+    //this.fetchId()
   },
   methods: {
     openLayanan(layanan) {
@@ -431,6 +465,12 @@ export default {
         this.fetchBarangById(id)
         this.gid = id
       } else this.gid = ''
+    },
+    showGmbr(id){
+      this.fetchId(id)
+      this.showImage = true
+      this.gid = id
+     
     },
     showConfirmDelete(id) {
       this.confirmDelete = true
@@ -581,6 +621,14 @@ export default {
         console.log(err.message)
         this.$q.loadingBar.stop()
       }
+    },
+    async fetchId(id='') {
+      
+      this.$q.loadingBar.start()
+      const barangRef = this.$firebase.firestore().collection('barang').doc(id)
+      let selectedBarang = await barangRef.get()
+      this.selectedImage = selectedBarang.data()
+
     },
     async fetchLayanan(layanan='') {
       this.$q.loadingBar.start()
